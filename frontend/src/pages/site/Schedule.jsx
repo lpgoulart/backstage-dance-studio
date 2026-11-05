@@ -60,7 +60,7 @@ export default function Schedule() {
             </motion.div>
           </AnimatePresence>
           <p className="muted" style={{ marginTop: 28, fontSize: 14 }}>
-            Já é aluno? Veja sua agenda personalizada no <Link to="/entrar" className="gold">{t('portal do aluno')}</Link>.
+            {t('Já é aluno? Veja sua agenda personalizada no')} <Link to="/entrar" className="gold">{t('portal do aluno')}</Link>.
           </p>
         </div>
       </section>
