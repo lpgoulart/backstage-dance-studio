@@ -1,0 +1,20 @@
+# Render Blueprint — backend API (Node 22 + Express + SQLite)
+# Deploy: https://render.com/deploy?repo=https://github.com/lpgoulart/backstage-dance-studio
+services:
+  - type: web
+    name: backstage-dance-studio-api
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 22.20.0
+      - key: JWT_SECRET
+        generateValue: true
+      # Frontend origin allowed to call the API (GitHub Pages)
+      - key: CORS_ORIGIN
+        value: https://lpgoulart.github.io
