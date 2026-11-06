@@ -1,0 +1,6 @@
+import{c as s,b as t,e as i,j as o,E as c}from"./index-CArU2Zh3.js";import{A as n}from"./AppShell-D0rYzIbs.js";import{L as l}from"./layout-dashboard-C-BXOxpF.js";import{L as d}from"./layers-Da9HYDK3.js";import{C as p}from"./clipboard-check-qM7oovgz.js";import{N as m}from"./notebook-pen-DuC3i6vw.js";import"./external-link-DvNcSy60.js";/**
+ * @license lucide-react v0.460.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const u=s("UserRound",[["circle",{cx:"12",cy:"8",r:"5",key:"1hypcn"}],["path",{d:"M20 21a8 8 0 0 0-16 0",key:"rfgkzh"}]]);function k(){const r=t("/teacher/dashboard"),a=i.useMemo(()=>{var e;return[{label:"Área do professor",items:[{to:"/professor",end:!0,label:"Painel",icon:l},{to:"/professor/turmas",label:"Minhas turmas",icon:d},{to:"/professor/chamada",label:"Chamada",icon:p,count:((e=r.data)==null?void 0:e.pending.length)||0},{to:"/professor/diario",label:"Diário de aula",icon:m},{to:"/professor/perfil",label:"Meu perfil",icon:u}]}]},[r.data]);return r.error?o.jsx("div",{className:"content",children:o.jsx(c,{error:r.error})}):o.jsx(n,{groups:a,context:{dash:r.data,reloadDash:r.reload}})}export{k as default};
