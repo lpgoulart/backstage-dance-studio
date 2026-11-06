@@ -66,7 +66,7 @@ function AchievementForm({ initial, metrics, icons, onSaved, onCancel }) {
       <p className="muted" style={{ fontSize: 13.5 }}>{t('O aluno desbloqueia quando')} <strong style={{ color: 'var(--text)' }}>{ruleText(metrics, f)}</strong>.</p>
       <label className="check"><input type="checkbox" checked={!!f.active} onChange={set('active')} />{t('Ativa (aparece no portal dos alunos)')}</label>
       {err && <p className="error-text">{err}</p>}
-      <div className="drawer-foot" style={{ margin: '8px -24px -24px', position: 'sticky', bottom: -24, background: 'var(--bg-2)' }}>
+      <div className="drawer-foot form-foot">
         <button className="btn btn-sm" onClick={onCancel}>{t('Cancelar')}</button>
         <button className="btn btn-primary btn-sm" onClick={save} disabled={busy || !f.title.trim() || !(Number(f.target) >= 1)}>{busy ? t('Salvando…') : initial.id ? t('Salvar') : t('Criar conquista')}</button>
       </div>

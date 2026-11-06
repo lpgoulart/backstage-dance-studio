@@ -75,7 +75,7 @@ function ArrayBlock({ title, sub, k, specs, content, simple, reload, onSave }) {
             </div>
           </div>
         ))}
-        <button className="btn btn-sm" style={{ justifySelf: 'start' }} onClick={() => setItems([...items, blank])}><Plus size={15} />{t(' Adicionar')}</button>
+        <button className="btn btn-sm" style={{ justifySelf: 'start', alignSelf: 'flex-start' }} onClick={() => setItems([...items, blank])}><Plus size={15} />{t(' Adicionar')}</button>
       </div>
     </div>
   );

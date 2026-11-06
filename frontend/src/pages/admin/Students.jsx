@@ -68,7 +68,7 @@ function StudentForm({ initial, classes, guardians, onSaved, onDeleted, onClose 
       </Field>
 
       <div className="section-title">{t('Responsável & acesso')}</div>
-      <div className="seg" style={{ justifySelf: 'start' }}>
+      <div className="seg" style={{ justifySelf: 'start', alignSelf: 'flex-start' }}>
         {[['none', 'Sem responsável'], ['existing', 'Existente'], ['new', 'Novo responsável']].map(([k, l]) => (
           <button type="button" key={k} className={gMode === k ? 'on' : ''} onClick={() => setGMode(k)}>{t(l)}</button>
         ))}
@@ -102,7 +102,7 @@ function StudentForm({ initial, classes, guardians, onSaved, onDeleted, onClose 
       )}
       <Field label={t('Observações')}><textarea className="textarea" value={f.notes || ''} onChange={set('notes')} placeholder={t('Restrições, alergias, figurino…')} /></Field>
       {err && <p className="error-text">{err}</p>}
-      <div className="drawer-foot" style={{ margin: '8px -24px -24px', position: 'sticky', bottom: -24, background: 'var(--bg-2)' }}>
+      <div className="drawer-foot form-foot">
         {initial.id && <button className="btn btn-sm btn-danger left" onClick={remove}><Trash2 size={15} />{t(' Excluir')}</button>}
         <button className="btn btn-sm" onClick={onClose}>{t('Cancelar')}</button>
         <button className="btn btn-primary btn-sm" onClick={save} disabled={busy || !f.name}>{busy ? t('Salvando…') : t('Salvar')}</button>

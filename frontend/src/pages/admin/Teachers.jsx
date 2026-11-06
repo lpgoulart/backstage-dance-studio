@@ -66,7 +66,7 @@ function TeacherForm({ initial, classes, onSaved, onCancel }) {
       </div>
       <Field label={t('Observações internas')}><textarea className="textarea" value={f.notes || ''} onChange={set('notes')} /></Field>
       {err && <p className="error-text">{err}</p>}
-      <div className="drawer-foot" style={{ margin: '8px -24px -24px', position: 'sticky', bottom: -24, background: 'var(--bg-2)' }}>
+      <div className="drawer-foot form-foot">
         <button className="btn btn-sm" onClick={onCancel}>{t('Cancelar')}</button>
         <button className="btn btn-primary btn-sm" onClick={save} disabled={busy || !f.name.trim()}>{busy ? t('Salvando…') : initial.id ? t('Salvar') : t('Contratar')}</button>
       </div>
@@ -114,7 +114,7 @@ function DismissPanel({ teacher, others, onDone, onCancel }) {
         </div>
       ))}
       {unassigned > 0 && teacher.classes.length > 0 && <p style={{ color: 'var(--gold)', fontSize: 13.5 }}><AlertTriangle size={14} style={{ verticalAlign: -2 }} /> {t('{n} turma(s) ficarão sem professor e aparecerão em alerta.', { n: unassigned })}</p>}
-      <div className="drawer-foot" style={{ margin: '8px -24px -24px', position: 'sticky', bottom: -24, background: 'var(--bg-2)' }}>
+      <div className="drawer-foot form-foot">
         <button className="btn btn-sm" onClick={onCancel}>{t('Cancelar')}</button>
         <button className="btn btn-sm btn-danger" onClick={confirm} disabled={busy}><UserMinus size={15} /> {busy ? t('Desligando…') : t('Confirmar desligamento')}</button>
       </div>
@@ -201,7 +201,7 @@ function TeacherDetail({ teacher: tc, onEdit, onDismiss, onRehire, onDelete, onC
         {tc.bio && <p>{tc.bio}</p>}
         {tc.notes && <p className="dim">📝 {tc.notes}</p>}
       </div>
-      <Link to={`/gestao/diarios?teacherId=${tc.id}`} className="btn btn-sm" style={{ justifySelf: 'start' }}>{t('Ver diário de aula')}</Link>
+      <Link to={`/gestao/diarios?teacherId=${tc.id}`} className="btn btn-sm" style={{ justifySelf: 'start', alignSelf: 'flex-start' }}>{t('Ver diário de aula')}</Link>
       <TeacherAccess key={tc.id + (tc.login_email || '')} teacher={tc} onChanged={onChanged} />
       <div className="section-title">Turmas ({tc.classes.length})</div>
       {tc.classes.length === 0 && <p className="dim" style={{ fontSize: 14 }}>{t('Nenhuma turma no momento.')}</p>}

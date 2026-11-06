@@ -72,9 +72,9 @@ function ClassForm({ initial, teachers, styles, rooms, onSaved, onCancel }) {
           <button type="button" className="icon-btn" aria-label={t('Remover horário')} onClick={() => setF({ ...f, schedules: f.schedules.filter((_, j) => j !== i) })}><Trash2 /></button>
         </div>
       ))}
-      <button type="button" className="btn btn-sm" style={{ justifySelf: 'start' }} onClick={() => setF({ ...f, schedules: [...f.schedules, { weekday: 1, start_time: '18:00', end_time: '19:00' }] })}><Plus size={15} />{t(' Adicionar horário')}</button>
+      <button type="button" className="btn btn-sm" style={{ justifySelf: 'start', alignSelf: 'flex-start' }} onClick={() => setF({ ...f, schedules: [...f.schedules, { weekday: 1, start_time: '18:00', end_time: '19:00' }] })}><Plus size={15} />{t(' Adicionar horário')}</button>
       {err && <p className="error-text">{err}</p>}
-      <div className="drawer-foot" style={{ margin: '8px -24px -24px', position: 'sticky', bottom: -24, background: 'var(--bg-2)' }}>
+      <div className="drawer-foot form-foot">
         <button className="btn btn-sm" onClick={onCancel}>{t('Cancelar')}</button>
         <button className="btn btn-primary btn-sm" onClick={save} disabled={busy || !f.name || !f.style}>{busy ? t('Salvando…') : initial.id ? t('Salvar') : t('Criar turma')}</button>
       </div>
@@ -261,8 +261,8 @@ export default function Classes() {
             <div className="section-title">{t('Horários')}</div>
             <div className="tags">{detail.data.schedules.map((s) => <span key={s.id} className="tag" style={{ '--c': detail.data.color }}><i />{WEEKDAYS[s.weekday]} · {s.start_time}–{s.end_time}</span>)}</div>
             <Roster cls={detail.data} onChange={(c) => { detail.setData(c); reload(); }} />
-            <Link to={`/gestao/diarios?classId=${openId}`} className="btn btn-sm" style={{ justifySelf: 'start' }}>{t('Ver diário da turma')}</Link>
-            <Link to={`/gestao/chamada?classId=${openId}`} className="btn btn-primary btn-sm" style={{ justifySelf: 'start' }}>{t('Fazer chamada desta turma')}</Link>
+            <Link to={`/gestao/diarios?classId=${openId}`} className="btn btn-sm" style={{ justifySelf: 'start', alignSelf: 'flex-start' }}>{t('Ver diário da turma')}</Link>
+            <Link to={`/gestao/chamada?classId=${openId}`} className="btn btn-primary btn-sm" style={{ justifySelf: 'start', alignSelf: 'flex-start' }}>{t('Fazer chamada desta turma')}</Link>
           </>
         ))}
       </Drawer>
