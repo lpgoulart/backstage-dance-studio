@@ -12,6 +12,7 @@ import portalRoutes from './routes/portal.js';
 import adminRoutes from './routes/admin.js';
 import teacherRoutes from './routes/teacher.js';
 import { langMiddleware } from './i18n.js';
+import { securityHeaders } from './security.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 4000);
@@ -19,6 +20,9 @@ const PORT = Number(process.env.PORT || 4000);
 seedIfEmpty();
 
 const app = express();
+app.disable('x-powered-by');
+app.set('trust proxy', 1); // Render/Cloudflare proxy: use the real client IP for rate limits
+app.use(securityHeaders);
 app.use(cors({ origin: process.env.CORS_ORIGIN?.split(',') || true }));
 app.use(express.json({ limit: '1mb' }));
 app.use(langMiddleware);

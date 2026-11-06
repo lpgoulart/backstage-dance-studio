@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { all, run, today } from '../db.js';
 import { required, HttpError } from '../auth.js';
+import { rateLimit } from '../security.js';
 import { attachSchedules, parseJson } from '../services.js';
 
 const r = Router();
@@ -42,14 +43,24 @@ r.get('/schedule', (req, res) => {
   res.json(classes);
 });
 
-r.post('/contact', (req, res) => {
+const LIMITS = { name: 120, email: 160, phone: 40, interest: 60, message: 3000 };
+
+r.post('/contact',
+  rateLimit({ name: 'contact', max: 5, windowMs: 60 * 60_000, message: 'Você já enviou várias mensagens. Tente novamente mais tarde.' }),
+  (req, res) => {
   required(req.body, ['name', 'message']);
-  const { name, email, phone, interest, message } = req.body;
-  if (!email && !phone) throw new HttpError(400, 'Informe e-mail ou telefone para retornarmos o contato');
-  if (String(message).length > 3000) throw new HttpError(400, 'Mensagem muito longa');
+  const f = {};
+  for (const [k, max] of Object.entries(LIMITS)) {
+    const v = req.body[k] === undefined || req.body[k] === null ? '' : String(req.body[k]).trim();
+    if (v.length > max) throw new HttpError(400, k === 'message' ? 'Mensagem muito longa' : 'Campo muito longo');
+    f[k] = v || null;
+  }
+  if (!f.name || !f.message) throw new HttpError(400, 'Campos obrigatórios: name, message');
+  if (!f.email && !f.phone) throw new HttpError(400, 'Informe e-mail ou telefone para retornarmos o contato');
+  if (f.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email)) throw new HttpError(400, 'E-mail inválido');
   const { lastInsertRowid } = run(
     `INSERT INTO contact_messages (name, email, phone, interest, message) VALUES (?,?,?,?,?)`,
-    String(name).trim(), email, phone, interest, String(message).trim());
+    f.name, f.email, f.phone, f.interest, f.message);
   res.status(201).json({ id: Number(lastInsertRowid), ok: true });
 });
 

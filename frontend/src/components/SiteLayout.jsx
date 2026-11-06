@@ -5,6 +5,7 @@ import { Menu, X, ArrowUpRight, Instagram, MessageCircle, Mail, MapPin } from 'l
 import { useFetch } from '../lib/useFetch.js';
 import { useAuth, homeFor } from '../lib/auth.jsx';
 import { API_DOCS_URL } from '../lib/api.js';
+import SafeLink from './SafeLink.jsx';
 import { t, LangSwitch } from '../i18n/index.jsx';
 
 const LINKS = [
@@ -84,7 +85,7 @@ export default function SiteLayout() {
     <>
       <Curtain />
       {banner?.enabled && banner.text && (
-        <Link to={banner.link || '/contato'} className="topbar">{banner.text}<span>→</span></Link>
+        <SafeLink to={banner.link} className="topbar">{banner.text}<span>→</span></SafeLink>
       )}
       <header className={`nav ${scrolled ? 'scrolled' : ''}`}>
         <div className="container nav-inner">

@@ -6,6 +6,7 @@ import { Reveal, SplitHeading, Counter, Stagger, itemVariants, useSpotlight } fr
 import { useFetch } from '../../lib/useFetch.js';
 import { MONTHS_SHORT, parseDate } from '../../lib/format.js';
 import { ProjectPoster } from './Projects.jsx';
+import SafeLink from '../../components/SafeLink.jsx';
 import { t, rich } from '../../i18n/index.jsx';
 
 export const emphasize = (title = '') => (title.includes('*') ? title : title.replace(/(\S+)$/, '*$1*'));
@@ -36,7 +37,7 @@ function Hero({ hero }) {
             {hero?.subtitle}
           </motion.p>
           <motion.div className="hero-actions" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.15, duration: 0.9 }}>
-            <Link to={hero?.ctaLink || '/contato'} className="btn btn-primary">{hero?.ctaLabel || t('Agende uma aula')} <ArrowRight className="arrow" /></Link>
+            <SafeLink to={hero?.ctaLink} className="btn btn-primary">{hero?.ctaLabel || t('Agende uma aula')} <ArrowRight className="arrow" /></SafeLink>
             <Link to="/horarios" className="btn">{t('Ver horários')}</Link>
           </motion.div>
         </div>

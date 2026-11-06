@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { all, get, run } from '../db.js';
 import { required, HttpError } from '../auth.js';
 import { readContent } from './public.js';
+import { findUnsafeLink, isSafeUrl } from '../security.js';
 
 const r = Router();
 
@@ -15,6 +16,9 @@ r.put('/content/:key', (req, res) => {
   const { key } = req.params;
   if (!CONTENT_KEYS.includes(key)) throw new HttpError(400, `Chave inválida. Use: ${CONTENT_KEYS.join(', ')}`);
   if (req.body?.value === undefined) throw new HttpError(400, 'Envie { "value": ... }');
+  const bad = findUnsafeLink(req.body.value);
+  if (bad) throw new HttpError(400, `Link inválido em "${bad}": use um caminho do site (ex.: /contato) ou um endereço https://`);
+  if (JSON.stringify(req.body.value).length > 50_000) throw new HttpError(400, 'Conteúdo muito longo');
   run(`INSERT INTO site_content (key, value, updated_at) VALUES (?, ?, datetime('now','localtime'))
        ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at`, key, JSON.stringify(req.body.value));
   res.json({ key, value: req.body.value });
@@ -40,8 +44,13 @@ function crud(path, table, fields, { requiredFields, orderBy, bools = [], extraS
     res.json(shape(row));
   });
 
+  const checkUrls = (b) => {
+    if (b.image_url !== undefined && !isSafeUrl(b.image_url)) throw new HttpError(400, 'URL de imagem inválida: use um endereço https://');
+  };
+
   r.post(path, (req, res) => {
     required(req.body, requiredFields);
+    checkUrls(req.body);
     const b = { published: true, ...req.body };
     const { lastInsertRowid } = run(`INSERT INTO ${table} (${fields.join(',')}) VALUES (${fields.map(() => '?').join(',')})`, ...vals(b));
     res.status(201).json(shape(get(`SELECT * FROM ${table} WHERE id = ?`, Number(lastInsertRowid))));
@@ -51,6 +60,7 @@ function crud(path, table, fields, { requiredFields, orderBy, bools = [], extraS
     const id = Number(req.params.id);
     const cur = get(`SELECT * FROM ${table} WHERE id = ?`, id);
     if (!cur) throw new HttpError(404, `${label} não encontrado`);
+    checkUrls(req.body || {});
     const b = { ...shape(cur), ...req.body };
     run(`UPDATE ${table} SET ${fields.map((f) => `${f} = ?`).join(', ')} WHERE id = ?`, ...vals(b), id);
     res.json(shape(get(`SELECT * FROM ${table} WHERE id = ?`, id)));

@@ -106,6 +106,16 @@ Defina `JWT_SECRET` e (opcionalmente) `PORT`, `DB_PATH`, `CORS_ORIGIN`.
 ### Diários de aula (gestão)
 *Gestão → Diários de aula* mostra, somente leitura, tudo o que os professores registraram, agrupado por turma, com filtros por professor, turma e busca no texto. Atalhos na ficha do professor e no painel da turma.
 
+## Segurança
+
+- **Sessões**: JWT (HS256) válido por 12 h; a cada requisição a conta é conferida no banco — usuário excluído ou acesso revogado perde o acesso na hora. Em produção a API não inicia sem `JWT_SECRET`.
+- **Login**: após 5 senhas erradas a conta fica bloqueada por 15 min para aquele IP (outras contas não são afetadas); limite geral de 30 tentativas por IP a cada 15 min; tempo de resposta igual para e-mails existentes ou não.
+- **Conteúdo editável**: links do CMS só aceitam caminhos do site (`/contato`) ou `https://`; imagens só `https://`. O site também renderiza qualquer link fora disso como um link interno seguro.
+- **Content Security Policy** no site publicado (somente scripts do próprio site) e cabeçalhos de segurança na API (`nosniff`, `X-Frame-Options`, `Referrer-Policy`, CSP, HSTS).
+- **Formulário de contato**: limites de tamanho, validação de e-mail e no máximo 5 envios por hora por IP.
+- **Banco**: todas as consultas usam parâmetros (sem SQL injection); cada perfil só acessa os próprios dados.
+- As contas de demonstração continuam na tela de login de propósito (demo). Para uso real, remova-as de `frontend/src/pages/Login.jsx` e troque as senhas.
+
 ## API
 
 | Grupo | Prefixo | Acesso |

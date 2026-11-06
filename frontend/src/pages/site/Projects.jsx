@@ -5,11 +5,12 @@ import { Reveal, SplitHeading } from '../../components/motion.jsx';
 import { useFetch } from '../../lib/useFetch.js';
 import { CtaBand } from './Home.jsx';
 import { t } from '../../i18n/index.jsx';
+import { isSafeImageUrl } from '../../components/SafeLink.jsx';
 
 export function ProjectPoster({ p }) {
   return (
     <article className="poster grain" tabIndex={0} style={{ '--c': p.color || '#e8b04b' }}>
-      <div className={`poster-art ${p.image_url ? 'img' : ''}`} style={p.image_url ? { backgroundImage: `url(${p.image_url})` } : undefined} />
+      <div className={`poster-art ${isSafeImageUrl(p.image_url) ? 'img' : ''}`} style={isSafeImageUrl(p.image_url) ? { backgroundImage: `url("${p.image_url}")` } : undefined} />
       <span className="poster-year" aria-hidden="true">{String(p.year || '').slice(-2) ? `’${String(p.year).slice(-2)}` : ''}</span>
       <div style={{ position: 'relative' }}>
         <span className="chip">{p.category}{p.year ? ` · ${p.year}` : ''}</span>

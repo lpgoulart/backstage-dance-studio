@@ -51,6 +51,13 @@ const ERRORS = {
   'Mensagem não encontrada': 'Message not found',
   'Envie { "value": ... }': 'Send { "value": ... }',
   'JSON inválido': 'Invalid JSON',
+  'Muitas tentativas. Tente novamente em alguns minutos.': 'Too many attempts. Please try again in a few minutes.',
+  'Você já enviou várias mensagens. Tente novamente mais tarde.': 'You have already sent several messages. Please try again later.',
+  'Campo muito longo': 'Field is too long',
+  'E-mail inválido': 'Invalid email',
+  'Senha muito longa': 'Password is too long',
+  'URL de imagem inválida: use um endereço https://': 'Invalid image URL: use an https:// address',
+  'Conteúdo muito longo': 'Content is too long',
   'Conquista não encontrada': 'Achievement not found',
   'Métrica inválida': 'Invalid metric',
   'A meta deve ser um número inteiro maior que zero': 'The target must be a whole number greater than zero',
@@ -62,6 +69,7 @@ const PATTERNS = [
   [/^Chave inválida\. Use: (.+)$/, (m) => `Invalid key. Use: ${m[1]}`],
   [/^(.+) está desligado\(a\) e não pode assumir turmas$/, (m) => `${m[1]} has been dismissed and cannot take classes`],
   [/^Professor substituto inválido para a turma (.+)$/, (m) => `Invalid replacement teacher for class ${m[1]}`],
+  [/^Link inválido em "(.+)": use um caminho do site \(ex\.: \/contato\) ou um endereço https:\/\/$/, (m) => `Invalid link in "${m[1]}": use a site path (e.g. /contato) or an https:// address`],
 ];
 
 export function translateError(msg) {
