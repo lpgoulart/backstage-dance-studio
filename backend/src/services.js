@@ -104,23 +104,44 @@ export function journey(stats) {
   return { xp, level: idx + 1, levelName: cur.name, description: cur.description, next: next?.name || null, nextAt: next?.min || null, progress, levels: LEVELS };
 }
 
-export function achievements(studentId) {
+/** Metrics an achievement rule can use. Values are computed per student. */
+export const ACHIEVEMENT_METRICS = {
+  classes_attended: 'Aulas frequentadas (presença ou atraso)',
+  on_time_run: 'Presenças seguidas sem atraso (melhor sequência)',
+  week_streak: 'Semanas seguidas com presença (sequência atual)',
+  attendance_rate_30: 'Frequência nos últimos 30 dias (%)',
+  styles_count: 'Modalidades diferentes matriculadas',
+  classes_enrolled: 'Turmas matriculadas',
+  events_going: 'Eventos com presença confirmada',
+  days_enrolled: 'Dias desde a matrícula',
+  xp: 'XP acumulado na jornada',
+};
+export const ACHIEVEMENT_ICONS = ['footprints', 'clock', 'flame', 'medal', 'sparkles', 'star', 'crown', 'trophy', 'award', 'heart', 'music', 'zap', 'target', 'gem', 'rocket', 'calendar-check'];
+
+export function studentMetrics(studentId) {
   const student = get(`SELECT * FROM students WHERE id = ?`, studentId);
   const stats = attendanceStats(studentId);
-  const styles = get(
-    `SELECT COUNT(DISTINCT c.style) n FROM enrollments e JOIN classes c ON c.id = e.class_id WHERE e.student_id = ?`, studentId).n;
-  const going = get(`SELECT COUNT(*) n FROM event_rsvps WHERE student_id = ? AND status = 'going'`, studentId).n;
-  const days = Math.floor((Date.now() - parseYmd(student.joined_at).getTime()) / 864e5);
-  const items = [
-    { id: 'first-step', icon: 'footprints', title: 'Primeiro Passo', description: 'Compareça à sua primeira aula.', current: stats.present + stats.late, target: 1 },
-    { id: 'on-time', icon: 'clock', title: 'Pontualidade de Palco', description: '10 presenças seguidas sem atraso.', current: stats.bestOnTimeRun, target: 10 },
-    { id: 'streak', icon: 'flame', title: 'Ritmo Constante', description: '4 semanas seguidas dançando.', current: stats.streakWeeks, target: 4 },
-    { id: 'marathon', icon: 'medal', title: 'Maratonista', description: 'Some 50 aulas no estúdio.', current: stats.present + stats.late, target: 50 },
-    { id: 'multi', icon: 'sparkles', title: 'Multiestilo', description: 'Dance duas ou mais modalidades.', current: styles, target: 2 },
-    { id: 'stage', icon: 'star', title: 'Rumo ao Palco', description: 'Confirme presença em um evento.', current: going, target: 1 },
-    { id: 'veteran', icon: 'crown', title: 'Parte dos Bastidores', description: 'Complete 1 ano de Backstage.', current: Math.min(days, 365), target: 365 },
-  ];
-  return items.map((a) => ({ ...a, current: Math.min(a.current, a.target), unlocked: a.current >= a.target }));
+  const enr = get(`SELECT COUNT(*) n, COUNT(DISTINCT c.style) styles FROM enrollments e JOIN classes c ON c.id = e.class_id WHERE e.student_id = ?`, studentId);
+  return {
+    classes_attended: stats.present + stats.late,
+    on_time_run: stats.bestOnTimeRun,
+    week_streak: stats.streakWeeks,
+    attendance_rate_30: stats.rate30 ?? 0,
+    styles_count: enr.styles,
+    classes_enrolled: enr.n,
+    events_going: get(`SELECT COUNT(*) n FROM event_rsvps WHERE student_id = ? AND status = 'going'`, studentId).n,
+    days_enrolled: student ? Math.max(0, Math.floor((Date.now() - parseYmd(student.joined_at).getTime()) / 864e5)) : 0,
+    xp: journey(stats).xp,
+  };
+}
+
+/** Active achievement rules evaluated for one student */
+export function achievements(studentId, metrics = studentMetrics(studentId)) {
+  return all(`SELECT * FROM achievements WHERE active = 1 ORDER BY sort_order, id`).map((a) => {
+    const value = metrics[a.metric] ?? 0;
+    return { id: a.id, icon: a.icon, title: a.title, description: a.description, metric: a.metric, target: a.target,
+      current: Math.min(value, a.target), unlocked: value >= a.target };
+  });
 }
 
 /** iCalendar feed with weekly recurring events for each class schedule (Manaus = UTC-4, no DST) */

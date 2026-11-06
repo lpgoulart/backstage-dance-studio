@@ -318,3 +318,11 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
   .badges { grid-template-columns: 1fr; }
   .login-box h1 { font-size: 36px; }
 }
+
+/* Achievements management */
+.ach-ico { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; flex: none; background: var(--bg-3); color: var(--dim); border: 1px solid var(--line); }
+.ach-ico.on { background: var(--gold); color: #1c1307; border-color: var(--gold); box-shadow: 0 0 24px rgba(232, 176, 75, 0.3); }
+.icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 8px; }
+.icon-grid button { height: 44px; border-radius: 12px; border: 1px solid var(--line-2); background: transparent; color: var(--muted); display: grid; place-items: center; transition: all 0.2s; }
+.icon-grid button:hover { color: var(--text); border-color: var(--text); }
+.icon-grid button.on { background: var(--gold); border-color: var(--gold); color: #1c1307; }

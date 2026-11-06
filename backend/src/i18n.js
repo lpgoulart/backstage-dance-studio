@@ -51,6 +51,10 @@ const ERRORS = {
   'Mensagem não encontrada': 'Message not found',
   'Envie { "value": ... }': 'Send { "value": ... }',
   'JSON inválido': 'Invalid JSON',
+  'Conquista não encontrada': 'Achievement not found',
+  'Métrica inválida': 'Invalid metric',
+  'A meta deve ser um número inteiro maior que zero': 'The target must be a whole number greater than zero',
+  'Ícone inválido': 'Invalid icon',
 };
 
 const PATTERNS = [

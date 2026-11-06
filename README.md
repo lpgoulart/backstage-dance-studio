@@ -100,6 +100,9 @@ Defina `JWT_SECRET` e (opcionalmente) `PORT`, `DB_PATH`, `CORS_ORIGIN`.
 - A API responde mensagens de erro em inglês quando recebe `Accept-Language: en` (o frontend envia automaticamente).
 - Todas as telas foram ajustadas para celular: tabelas viram cartões, a grade semanal empilha por dia e os formulários se reorganizam.
 
+### Conquistas (gestão)
+*Gestão → Conquistas* define as regras que desbloqueiam conquistas no portal do aluno: nome, descrição, ícone, **métrica** (aulas frequentadas, sequência de semanas, presenças sem atraso, frequência em 30 dias, modalidades, turmas, eventos confirmados, dias de matrícula ou XP) e **meta**. Dá para criar, editar, inativar (some do portal sem perder a regra) e excluir; cada cartão mostra quantos alunos ativos já desbloquearam. Somente o perfil de gestão acessa.
+
 ### Diários de aula (gestão)
 *Gestão → Diários de aula* mostra, somente leitura, tudo o que os professores registraram, agrupado por turma, com filtros por professor, turma e busca no texto. Atalhos na ficha do professor e no painel da turma.
 

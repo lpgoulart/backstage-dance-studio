@@ -27,6 +27,7 @@ const Students = lazy(() => import('./pages/admin/Students.jsx'));
 const Classes = lazy(() => import('./pages/admin/Classes.jsx'));
 const Teachers = lazy(() => import('./pages/admin/Teachers.jsx'));
 const Diaries = lazy(() => import('./pages/admin/Diaries.jsx'));
+const Achievements = lazy(() => import('./pages/admin/Achievements.jsx'));
 const WeekSchedule = lazy(() => import('./pages/admin/WeekSchedule.jsx'));
 const Attendance = lazy(() => import('./pages/admin/Attendance.jsx'));
 const Payments = lazy(() => import('./pages/admin/Payments.jsx'));
@@ -89,6 +90,7 @@ export default function App() {
                 <Route path="turmas" element={<Classes />} />
                 <Route path="professores" element={<Teachers />} />
                 <Route path="diarios" element={<Diaries />} />
+                <Route path="conquistas" element={<Achievements />} />
                 <Route path="grade" element={<WeekSchedule />} />
                 <Route path="chamada" element={<Attendance />} />
                 <Route path="financeiro" element={<Payments />} />

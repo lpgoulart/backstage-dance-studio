@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Footprints, Clock, Flame, Medal, Sparkles, Star, Crown, Lock } from 'lucide-react';
+import { Lock } from 'lucide-react';
+import { AchievementIcon } from '../../components/achievementIcons.jsx';
 import { usePortalReady } from './PortalLayout.jsx';
 import { LevelRing } from './PortalHome.jsx';
 import { useFetch } from '../../lib/useFetch.js';
@@ -9,7 +10,6 @@ import { Bar, Loading } from '../../components/ui.jsx';
 import { fmtDate, ATT_STATUS, WEEKDAYS_SHORT } from '../../lib/format.js';
 import { t, rich } from '../../i18n/index.jsx';
 
-const ICONS = { footprints: Footprints, clock: Clock, flame: Flame, medal: Medal, sparkles: Sparkles, star: Star, crown: Crown };
 
 function Heatmap({ records }) {
   // 12 weeks × 7 days, ending this week; worst status of the day wins
@@ -100,10 +100,9 @@ export default function PortalJourney() {
         <div className="card-head"><div><h2>{t('Conquistas')}</h2><div className="sub">{t('{a} de {b} desbloqueadas', { a: achievements.filter((a) => a.unlocked).length, b: achievements.length })}</div></div></div>
         <div className="badges">
           {achievements.map((a, i) => {
-            const Icon = ICONS[a.icon] || Star;
             return (
               <motion.div key={a.id} className={`ach ${a.unlocked ? 'on' : ''}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                <div className="ico">{a.unlocked ? <Icon size={22} /> : <Lock size={18} />}</div>
+                <div className="ico">{a.unlocked ? <AchievementIcon name={a.icon} /> : <Lock size={18} />}</div>
                 <h4>{t(a.title)}</h4>
                 <p>{t(a.description)}</p>
                 {!a.unlocked && <><Bar pct={(a.current / a.target) * 100} /><span className="dim" style={{ fontSize: 12 }}>{a.current}/{a.target}</span></>}

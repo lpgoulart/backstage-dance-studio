@@ -2,7 +2,7 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import { all, get, run, tx, today, refreshOverdue } from '../db.js';
 import { requireAuth, requireRole, required, HttpError } from '../auth.js';
-import { attachSchedules, studentClasses, attendanceStats } from '../services.js';
+import { attachSchedules, studentClasses, attendanceStats, ACHIEVEMENT_METRICS, ACHIEVEMENT_ICONS, studentMetrics } from '../services.js';
 import cms from './cms.js';
 import analytics from './analytics.js';
 import teachers from './teachers.js';
@@ -277,6 +277,62 @@ r.get('/logs', (req, res) => {
     g.entries.push(e);
   }
   res.json({ total: entries.length, classes: byClass });
+});
+
+/* ───────── Achievements (rules shown in the student portal) ───────── */
+
+r.get('/achievements/options', (req, res) => {
+  res.json({ metrics: Object.entries(ACHIEVEMENT_METRICS).map(([key, label]) => ({ key, label })), icons: ACHIEVEMENT_ICONS });
+});
+
+r.get('/achievements', (req, res) => {
+  const rules = all(`SELECT * FROM achievements ORDER BY sort_order, id`);
+  // How many active students currently meet each rule
+  const metrics = all(`SELECT id FROM students WHERE status = 'active'`).map((s) => studentMetrics(s.id));
+  res.json({
+    active_students: metrics.length,
+    achievements: rules.map((a) => {
+      const unlocked = metrics.filter((m) => (m[a.metric] ?? 0) >= a.target).length;
+      return { ...a, active: !!a.active, unlocked_count: unlocked, unlocked_pct: metrics.length ? Math.round((unlocked / metrics.length) * 100) : 0 };
+    }),
+  });
+});
+
+function validAchievement(b, partial = false) {
+  if (!partial || b.title !== undefined) if (!String(b.title || '').trim()) throw new HttpError(400, 'Campos obrigatórios: title');
+  if (!partial || b.metric !== undefined) if (!ACHIEVEMENT_METRICS[b.metric]) throw new HttpError(400, 'Métrica inválida');
+  if (!partial || b.target !== undefined) if (!(Number.isInteger(Number(b.target)) && Number(b.target) >= 1)) throw new HttpError(400, 'A meta deve ser um número inteiro maior que zero');
+  if (b.icon !== undefined && !ACHIEVEMENT_ICONS.includes(b.icon)) throw new HttpError(400, 'Ícone inválido');
+}
+
+const loadAchievement = (id) => {
+  const a = get(`SELECT * FROM achievements WHERE id = ?`, id);
+  if (!a) throw new HttpError(404, 'Conquista não encontrada');
+  return { ...a, active: !!a.active };
+};
+
+r.post('/achievements', (req, res) => {
+  const b = req.body || {};
+  validAchievement(b);
+  const order = b.sort_order ?? (get(`SELECT COALESCE(MAX(sort_order), 0) + 1 n FROM achievements`).n);
+  const { lastInsertRowid } = run(`INSERT INTO achievements (title, description, icon, metric, target, active, sort_order) VALUES (?,?,?,?,?,?,?)`,
+    String(b.title).trim(), b.description, b.icon || 'star', b.metric, Number(b.target), b.active === false ? 0 : 1, Number(order));
+  res.status(201).json(loadAchievement(Number(lastInsertRowid)));
+});
+
+r.put('/achievements/:id', (req, res) => {
+  const cur = loadAchievement(Number(req.params.id));
+  validAchievement(req.body || {}, true);
+  const b = { ...cur, ...req.body };
+  run(`UPDATE achievements SET title=?, description=?, icon=?, metric=?, target=?, active=?, sort_order=? WHERE id=?`,
+    String(b.title).trim(), b.description, b.icon, b.metric, Number(b.target), b.active ? 1 : 0, Number(b.sort_order) || 0, cur.id);
+  res.json(loadAchievement(cur.id));
+});
+
+r.delete('/achievements/:id', (req, res) => {
+  const { changes } = run(`DELETE FROM achievements WHERE id = ?`, Number(req.params.id));
+  if (!changes) throw new HttpError(404, 'Conquista não encontrada');
+  res.status(204).end();
 });
 
 /** Weekly timetable: one row per (class, weekday, time) */

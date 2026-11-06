@@ -158,6 +158,18 @@ CREATE TABLE IF NOT EXISTS class_logs (
   created_at TEXT NOT NULL DEFAULT (datetime('now','localtime'))
 );
 
+CREATE TABLE IF NOT EXISTS achievements (
+  id INTEGER PRIMARY KEY,
+  title TEXT NOT NULL,
+  description TEXT,
+  icon TEXT NOT NULL DEFAULT 'star',
+  metric TEXT NOT NULL,
+  target INTEGER NOT NULL CHECK (target >= 1),
+  active INTEGER NOT NULL DEFAULT 1,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+);
+
 CREATE TABLE IF NOT EXISTS site_content (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL,
@@ -182,7 +194,7 @@ CREATE INDEX IF NOT EXISTS idx_pay_month ON payments(reference_month);
 
 db.exec(SCHEMA);
 
-const TABLES = ['class_logs', 'contact_messages', 'site_content', 'announcements', 'projects', 'event_rsvps', 'events',
+const TABLES = ['achievements', 'class_logs', 'contact_messages', 'site_content', 'announcements', 'projects', 'event_rsvps', 'events',
   'payments', 'attendance', 'enrollments', 'class_schedules', 'classes', 'teachers', 'students', 'users'];
 
 export function resetDatabase() {
@@ -246,6 +258,21 @@ function migrate() {
     });
     db.exec('PRAGMA foreign_keys = ON;');
   }
+  // v5: achievements are stored rules managed by the studio (seed the original 7 once)
+  if (get(`SELECT COUNT(*) n FROM achievements`).n === 0) {
+    const defaults = [
+      ['Primeiro Passo', 'Compareça à sua primeira aula.', 'footprints', 'classes_attended', 1],
+      ['Pontualidade de Palco', '10 presenças seguidas sem atraso.', 'clock', 'on_time_run', 10],
+      ['Ritmo Constante', '4 semanas seguidas dançando.', 'flame', 'week_streak', 4],
+      ['Maratonista', 'Some 50 aulas no estúdio.', 'medal', 'classes_attended', 50],
+      ['Multiestilo', 'Dance duas ou mais modalidades.', 'sparkles', 'styles_count', 2],
+      ['Rumo ao Palco', 'Confirme presença em um evento.', 'star', 'events_going', 1],
+      ['Parte dos Bastidores', 'Complete 1 ano de Backstage.', 'crown', 'days_enrolled', 365],
+    ];
+    defaults.forEach(([title, description, icon, metric, target], i) =>
+      run(`INSERT INTO achievements (title, description, icon, metric, target, sort_order) VALUES (?,?,?,?,?,?)`, title, description, icon, metric, target, i + 1));
+  }
+
   if (!all(`PRAGMA table_info(teachers)`).some((c) => c.name === 'user_id')) {
     db.exec(`ALTER TABLE teachers ADD COLUMN user_id INTEGER REFERENCES users(id) ON DELETE SET NULL`);
   }

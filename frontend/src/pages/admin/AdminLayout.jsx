@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { LayoutDashboard, Users, Layers, GraduationCap, NotebookPen, CalendarRange, ClipboardCheck, Wallet, Globe, Inbox, FileCode2 } from 'lucide-react';
+import { LayoutDashboard, Users, Layers, GraduationCap, NotebookPen, Trophy, CalendarRange, ClipboardCheck, Wallet, Globe, Inbox, FileCode2 } from 'lucide-react';
 import AppShell from '../../components/AppShell.jsx';
 import { useFetch } from '../../lib/useFetch.js';
 import { API_DOCS_URL } from '../../lib/api.js';
@@ -22,6 +22,7 @@ export default function AdminLayout() {
         { to: '/gestao/grade', label: 'Grade semanal', icon: CalendarRange },
         { to: '/gestao/chamada', label: 'Chamada', icon: ClipboardCheck },
         { to: '/gestao/financeiro', label: 'Financeiro', icon: Wallet },
+        { to: '/gestao/conquistas', label: 'Conquistas', icon: Trophy },
       ],
     },
     {

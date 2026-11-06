@@ -53,6 +53,7 @@ const T = {
   users: 'Gestão · Contas de acesso',
   classes: 'Gestão · Turmas e grade',
   teachers: 'Gestão · Professores',
+  achievements: 'Gestão · Conquistas',
   attendance: 'Gestão · Chamada',
   payments: 'Gestão · Financeiro',
   cms: 'Gestão · Conteúdo do site',
@@ -285,6 +286,23 @@ const schemas = {
     },
   },
 
+  AchievementRule: {
+    type: 'object',
+    properties: {
+      id: { type: 'integer' }, title: { type: 'string', example: 'Maratonista' }, description: { type: 'string' }, icon: { type: 'string', example: 'medal' },
+      metric: { type: 'string', enum: ['classes_attended', 'on_time_run', 'week_streak', 'attendance_rate_30', 'styles_count', 'classes_enrolled', 'events_going', 'days_enrolled', 'xp'] },
+      target: { type: 'integer', minimum: 1, example: 50 }, active: { type: 'boolean' }, sort_order: { type: 'integer' },
+      unlocked_count: { type: 'integer', description: 'Alunos ativos que já atingiram a meta (somente na listagem)' }, unlocked_pct: { type: 'integer' },
+    },
+  },
+  AchievementInput: {
+    type: 'object', required: ['title', 'metric', 'target'],
+    properties: {
+      title: { type: 'string', example: 'Cem Aulas' }, description: { type: 'string', example: 'Some 100 aulas no estúdio.' },
+      icon: { type: 'string', example: 'trophy' }, metric: { type: 'string', example: 'classes_attended' }, target: { type: 'integer', example: 100 },
+      active: { type: 'boolean', example: true }, sort_order: { type: 'integer' },
+    },
+  },
   Event: {
     type: 'object',
     properties: {
@@ -538,6 +556,20 @@ const paths = {
   },
   '/admin/teachers/{id}/rehire': {
     post: op(T.teachers, 'Recontratar professor', { params: [idParam()], body: { type: 'object', properties: { date: { type: 'string', format: 'date' } } }, res: ref('TeacherDetail'), errors: [400, 403, 404] }),
+  },
+  '/admin/achievements/options': {
+    get: op(T.achievements, 'Métricas e ícones disponíveis para regras de conquista', { errors: [403],
+      res: { type: 'object', properties: { metrics: arr({ type: 'object', properties: { key: { type: 'string', example: 'classes_attended' }, label: { type: 'string' } } }), icons: arr({ type: 'string' }) } } }),
+  },
+  '/admin/achievements': {
+    get: op(T.achievements, 'Listar conquistas (com quantos alunos ativos já desbloquearam)', { errors: [403],
+      res: { type: 'object', properties: { active_students: { type: 'integer' }, achievements: arr(ref('AchievementRule')) } } }),
+    post: op(T.achievements, 'Criar conquista', { body: ref('AchievementInput'), ok: 201, res: ref('AchievementRule'), errors: [400, 403] }),
+  },
+  '/admin/achievements/{id}': {
+    put: op(T.achievements, 'Editar, ativar ou inativar conquista', { params: [idParam()], body: ref('AchievementInput'), res: ref('AchievementRule'), errors: [400, 403, 404],
+      description: 'Atualização parcial. Envie `{ "active": false }` para inativar: a conquista some do portal sem perder a regra.' }),
+    delete: op(T.achievements, 'Excluir conquista', { params: [idParam()], ok: 204, errors: [403, 404] }),
   },
   '/admin/logs': {
     get: op(T.teachers, 'Diários de aula dos professores, agrupados por turma', {
